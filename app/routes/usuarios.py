@@ -1,7 +1,25 @@
 from fastapi import APIRouter
-
+from app.database.connection import cursor, conexion
+from app.models.usuario_model import Usuario
 router = APIRouter()
 
 @router.get("/usuarios")
 def listar_usuarios():
-    return {"mensaje": "Lista de usuarios"}
+    cursor.execute("SELECT * FROM usuarios")
+    columnas = [col[0] for col in cursor.description]  
+    filas = cursor.fetchall()
+    return [dict(zip(columnas, fila)) for fila in filas]
+
+@router.post("/usuarios")
+def crear_usuario(usuario: Usuario):
+    cursor.execute("""
+        INSERT INTO usuarios (cod_usuario, nombre_usuario, email, password_hash)
+        VALUES (?, ?, ?, ?)
+    """, (
+        usuario.cod_usuario,
+        usuario.nombre_usuario,
+        usuario.email,
+        usuario.password_hash
+    ))
+    conexion.commit()
+    return {"mensaje": "Usuario creado correctamente"}
