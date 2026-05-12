@@ -6,7 +6,7 @@ router = APIRouter()
 
 @router.get("/candidatos")
 def listar_candidatos():
-    cursor.execute("SELECT * FROM candidatos")
+    cursor.execute("SELECT * FROM TB_CANDIDATO")
     columnas = [col[0] for col in cursor.description] 
     filas = cursor.fetchall()
     return [dict(zip(columnas, fila)) for fila in filas]

@@ -6,18 +6,24 @@ router = APIRouter()
 @router.post("/votar")
 def registrar_voto(voto: Voto):
     cursor.execute("""
-        SELECT * FROM votos WHERE cod_usuario = ?
+        SELECT * FROM TB_VOTO WHERE USUARIO_ID = ?
     """, (voto.cod_usuario,))
 
     if cursor.fetchone():
         return {"mensaje": "Este usuario ya votó"}
 
+    cursor.execute("SELECT COUNT(*) FROM TB_VOTO")
+    conteo = cursor.fetchone()[0]
+    id_voto = f"V{str(conteo + 1).zfill(7)}"
+
     cursor.execute("""
-        INSERT INTO votos (cod_usuario, cod_candidato)
-        VALUES (?, ?)
+        INSERT INTO TB_VOTO (ID_VOTO, USUARIO_ID, CANDIDATO_ID, FECHA_VOTO)
+        VALUES (?, ?, ?, ?)
     """, (
+        id_voto,
         voto.cod_usuario,
-        voto.cod_candidato
+        voto.cod_candidato,
+        datetime.now()
     ))
     conexion.commit()
     return {"mensaje": "Voto registrado correctamente"}

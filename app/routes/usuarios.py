@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.get("/usuarios")
 def listar_usuarios():
-    cursor.execute("SELECT * FROM usuarios")
+    cursor.execute("SELECT * FROM TB_USUARIO")
     columnas = [col[0] for col in cursor.description]  
     filas = cursor.fetchall()
     return [dict(zip(columnas, fila)) for fila in filas]
@@ -18,7 +18,7 @@ def crear_usuario(usuario: Usuario):
     password_encriptado = encriptar_password(usuario.password_hash)
     
     cursor.execute("""
-        INSERT INTO usuarios (cod_usuario, nombre_usuario, email, password_hash)
+        INSERT INTO TB_USUARIO (cod_usuario, nombre_usuario, email, password_hash)
         VALUES (?, ?, ?, ?)
     """, (
         usuario.cod_usuario,
